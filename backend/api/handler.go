@@ -25,11 +25,11 @@ func (h *JobHandler) SubmitJob(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
 		return
-
 	}
 	// make a new id
 	req.Id = int(time.Now().UnixNano())
 
+	// pass on que a job
 	h.Queue <- req
 
 	c.JSON(http.StatusOK, gin.H{
