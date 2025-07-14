@@ -6,5 +6,5 @@ import (
 )
 
 func SetupRoutes(router *gin.Engine, handler *api.JobHandler) {
-	router.GET("/submit-job", handler.SubmitJob)
+	router.POST("/submit-job", handler.SubmitJob)
 }
