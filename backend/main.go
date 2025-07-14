@@ -4,6 +4,7 @@ import (
 	"github.com/Skpanchall/go-job-queue/backend/api"
 	"github.com/Skpanchall/go-job-queue/backend/core"
 	"github.com/Skpanchall/go-job-queue/backend/routes"
+	"github.com/Skpanchall/go-job-queue/backend/worker"
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,6 +14,8 @@ func main() {
 	gin := gin.Default()
 
 	handler := api.NewJobHandler(jobQueue)
+
+	worker.StartWorkerPool(jobQueue, 3)
 
 	// setup routes here
 	routes.SetupRoutes(gin, handler)
