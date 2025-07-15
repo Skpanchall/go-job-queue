@@ -2,9 +2,11 @@ package api
 
 import (
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/Skpanchall/go-job-queue/backend/core"
+	"github.com/Skpanchall/go-job-queue/backend/store"
 	"github.com/gin-gonic/gin"
 )
 
@@ -28,6 +30,7 @@ func (h *JobHandler) SubmitJob(c *gin.Context) {
 	}
 	// make a new id
 	req.Id = int(time.Now().UnixNano())
+	store.SetJobStatus(req.Id, "pending")
 
 	// pass on que a job
 	h.Queue <- req
@@ -37,4 +40,14 @@ func (h *JobHandler) SubmitJob(c *gin.Context) {
 		"job_id": req.Id,
 	})
 
+}
+
+func (h *JobHandler) GetJob(c *gin.Context) {
+	idStr := c.Param("id")
+	id, _ := strconv.Atoi(idStr)
+	status := store.GetJobStatus(id)
+	c.JSON(http.StatusOK, gin.H{
+		"stauts": status,
+		"job_id": id,
+	})
 }
