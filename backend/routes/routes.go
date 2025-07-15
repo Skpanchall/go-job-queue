@@ -7,4 +7,5 @@ import (
 
 func SetupRoutes(router *gin.Engine, handler *api.JobHandler) {
 	router.POST("/submit-job", handler.SubmitJob)
+	router.GET("/job/:id", handler.GetJob)
 }
