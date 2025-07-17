@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/Skpanchall/go-job-queue/backend/api"
 	"github.com/Skpanchall/go-job-queue/backend/core"
+	"github.com/Skpanchall/go-job-queue/backend/db"
 	"github.com/Skpanchall/go-job-queue/backend/routes"
 	"github.com/Skpanchall/go-job-queue/backend/worker"
 	"github.com/gin-gonic/gin"
@@ -13,7 +14,9 @@ func main() {
 
 	gin := gin.Default()
 
-	handler := api.NewJobHandler(jobQueue)
+	db := db.Init()
+
+	handler := api.NewJobHandler(jobQueue, db)
 
 	worker.StartWorkerPool(jobQueue, 3)
 
