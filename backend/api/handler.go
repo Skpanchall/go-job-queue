@@ -1,6 +1,7 @@
 package api
 
 import (
+	"database/sql"
 	"net/http"
 	"strconv"
 	"time"
@@ -10,11 +11,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type JobHandler struct{ Queue chan core.Job }
+type JobHandler struct {
+	Queue chan core.Job
+	DB    *sql.DB
+}
 
-func NewJobHandler(newjob chan core.Job) *JobHandler {
+func NewJobHandler(newjob chan core.Job, db *sql.DB) *JobHandler {
 	return &JobHandler{
 		Queue: newjob,
+		DB:    db,
 	}
 
 }
@@ -30,7 +35,13 @@ func (h *JobHandler) SubmitJob(c *gin.Context) {
 	}
 	// make a new id
 	req.Id = int(time.Now().UnixNano())
-	store.SetJobStatus(req.Id, "pending")
+	err = req.Insert(h.DB)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "failed to save job"})
+	}
+
+	// store.SetJobStatus(req.Id, "pending")
 
 	// pass on que a job
 	h.Queue <- req
